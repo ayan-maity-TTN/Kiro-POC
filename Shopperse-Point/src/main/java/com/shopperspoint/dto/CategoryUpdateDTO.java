@@ -7,11 +7,13 @@ import jakarta.validation.constraints.Size;
 import jakarta.validation.groups.Default;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class CategoryUpdateDTO {
 
     private Long id;
@@ -22,4 +24,6 @@ public class CategoryUpdateDTO {
     )
     @Size(min = 3, max = 255, message = "Category name must be between 3 and 255 characters")
     private String name;
+
+    private Long parentCategoryId;
 }

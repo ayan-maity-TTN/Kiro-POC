@@ -20,6 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -113,7 +114,7 @@ public class CategoryService {
 
         Category category = new Category();
 
-        category.setName(categoryName.toLowerCase());
+        category.setName(categoryName.substring(0, 1).toUpperCase() + categoryName.substring(1).toLowerCase());
         category.setParentCategory(parentCategory);
 
         categoryRepo.save(category);
@@ -245,35 +246,47 @@ public class CategoryService {
     }
 
 
+    @Transactional
     public ResponseEntity<GenericResponse> updateCategory(CategoryUpdateDTO categoryUpdateDTO, Locale locale) {
-        log.info("Updating category with ID: {}", categoryUpdateDTO.getId());
+        log.info("Updating category with ID: {}, parentCategoryId: {}", categoryUpdateDTO.getId(), categoryUpdateDTO.getParentCategoryId());
         Category category = categoryRepo.findById(categoryUpdateDTO.getId()).orElseThrow(
                 () -> new ResouceNotFound("Category id not found")
         );
 
-        String newName = categoryUpdateDTO.getName().trim();
+        String newName = categoryUpdateDTO.getName() != null ? categoryUpdateDTO.getName().trim() : category.getName();
 
-        // check in same parent chain no globally
-        Category parent = category.getParentCategory();
-        while (parent != null) {
-            if (parent.getName().equalsIgnoreCase(newName)) {
+        // Resolve new parent if provided
+        Category newParent = null;
+        if (categoryUpdateDTO.getParentCategoryId() != null) {
+            newParent = categoryRepo.findById(categoryUpdateDTO.getParentCategoryId()).orElseThrow(
+                    () -> new ResouceNotFound("Parent category id not found")
+            );
+            // Prevent setting itself or its own child as parent
+            if (newParent.getId().equals(category.getId())) {
+                throw new DuplicateEntryException("Category cannot be its own parent");
+            }
+        }
+
+        // check in parent chain for duplicate name
+        Category checkParent = newParent != null ? newParent : category.getParentCategory();
+        while (checkParent != null) {
+            if (checkParent.getName().equalsIgnoreCase(newName)) {
                 log.warn("Duplicate name '{}' in parent hierarchy during update", newName);
                 throw new DuplicateEntryException("Category name already present in parent");
             }
-
-            parent = parent.getParentCategory();
+            checkParent = checkParent.getParentCategory();
         }
 
         //check in children
-
         if (duplicateChildPresent(category, newName)) {
             log.warn("Duplicate name '{}' in child hierarchy during update", newName);
             throw new DuplicateEntryException("Category name already present in child");
         }
 
-
-        category.setName(categoryUpdateDTO.getName());
+        category.setName(newName);
+        category.setParentCategory(newParent);
         categoryRepo.save(category);
+        log.info("Category {} updated. New parent: {}", category.getId(), newParent != null ? newParent.getId() : "null (root)");
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new GenericResponse(messageSource.getMessage("category.update", null, locale), message, LocalDateTime.now()));

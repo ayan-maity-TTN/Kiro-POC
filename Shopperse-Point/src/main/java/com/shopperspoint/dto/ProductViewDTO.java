@@ -17,6 +17,10 @@ public class ProductViewDTO {
     private String description;
     private Boolean isCancellable;
     private Boolean isReturnable;
+    private Boolean isActive;
     private CategoryViewResponseDTO category;
+    private String categoryName;
+    private String sellerCompanyName;
     private List<String> primaryImageUrl;
+    private Long price;
 }

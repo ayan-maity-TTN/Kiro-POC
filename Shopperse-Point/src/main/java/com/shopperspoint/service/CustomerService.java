@@ -220,6 +220,7 @@ public class CustomerService {
                                         (user.getMiddleName() != null ? " " + user.getMiddleName() : "") +
                                         " " + user.getLastName(),
                                 user.getEmail(),
+                                user.getPhoneNumber(),
                                 user.getIsActive()
                         )
                 )

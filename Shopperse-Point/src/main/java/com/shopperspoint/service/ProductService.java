@@ -619,6 +619,11 @@ public class ProductService {
                 variation -> ImageUtils.getImage(variation.getId(), type)
         ).filter(Objects::nonNull).toList();
         log.info("Admin fetched product: {}", product.getName());
+        Long minPrice = productVariations.stream()
+                .map(ProductVariation::getPrice)
+                .filter(Objects::nonNull)
+                .min(Long::compareTo)
+                .orElse(0L);
         return new ProductViewDTO(
                 productId,
                 product.getName(),
@@ -626,8 +631,12 @@ public class ProductService {
                 product.getDescription(),
                 product.getIsCancellable(),
                 product.getIsReturnable(),
+                product.getIsActive(),
                 new CategoryViewResponseDTO(product.getCategory().getId(), product.getCategory().getName()),
-                imageUtils
+                product.getCategory().getName(),
+                product.getSeller() != null ? product.getSeller().getCompanyName() : null,
+                imageUtils,
+                minPrice
         );
     }
 
@@ -664,6 +673,13 @@ public class ProductService {
                                     variation -> ImageUtils.getImage(variation.getId(), type)
                             ).filter(Objects::nonNull).toList();
 
+                    Long minPrice = product.getProductVariations().stream()
+                            .filter(ProductVariation::getIsActive)
+                            .map(ProductVariation::getPrice)
+                            .filter(Objects::nonNull)
+                            .min(Long::compareTo)
+                            .orElse(0L);
+
                     return new ProductViewDTO(
                             product.getId(),
                             product.getName(),
@@ -671,12 +687,15 @@ public class ProductService {
                             product.getDescription(),
                             product.getIsCancellable(),
                             product.getIsReturnable(),
+                            product.getIsActive(),
                             new CategoryViewResponseDTO(product.getCategory().getId(), product.getCategory().getName()),
-                            imageUtils
+                            product.getCategory().getName(),
+                            product.getSeller() != null ? product.getSeller().getCompanyName() : null,
+                            imageUtils,
+                            minPrice
                     );
                 }
         ).toList();
-
     }
 
     private List<Category> getChildren(Long categoryId) {
@@ -735,7 +754,7 @@ public class ProductService {
     }
 
     public List<ProductViewDTO> viewAllProductsByAdmin(int page, int size, String sort, String order, String filter) {
-        log.info("Admin viewing all active products");
+        log.info("Admin viewing all products");
         Page<Product> products;
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(order), sort));
@@ -743,7 +762,7 @@ public class ProductService {
         if (filter != null && !filter.isBlank()) {
             products = productRepo.findActiveProductWithQuery(filter, pageable);
         } else {
-            products = productRepo.findByIsDeletedFalseAndIsActiveTrue(pageable);
+            products = productRepo.findAll(pageable);
         }
 
         log.info("Total active products fetched: {}", products.getTotalElements());
@@ -754,6 +773,13 @@ public class ProductService {
                                     variation -> ImageUtils.getImage(variation.getId(), type)
                             ).filter(Objects::nonNull).toList();
 
+                    Long minPrice = product.getProductVariations().stream()
+                            .filter(ProductVariation::getIsActive)
+                            .map(ProductVariation::getPrice)
+                            .filter(Objects::nonNull)
+                            .min(Long::compareTo)
+                            .orElse(0L);
+
                     return new ProductViewDTO(
                             product.getId(),
                             product.getName(),
@@ -761,8 +787,12 @@ public class ProductService {
                             product.getDescription(),
                             product.getIsCancellable(),
                             product.getIsReturnable(),
+                            product.getIsActive(),
                             new CategoryViewResponseDTO(product.getCategory().getId(), product.getCategory().getName()),
-                            imageUtils
+                            product.getCategory().getName(),
+                            product.getSeller() != null ? product.getSeller().getCompanyName() : null,
+                            imageUtils,
+                            minPrice
                     );
                 }
         ).toList();
@@ -795,6 +825,13 @@ public class ProductService {
                                     variation -> ImageUtils.getImage(variation.getId(), type)
                             ).filter(Objects::nonNull).toList();
 
+                    Long minPrice = p.getProductVariations().stream()
+                            .filter(ProductVariation::getIsActive)
+                            .map(ProductVariation::getPrice)
+                            .filter(Objects::nonNull)
+                            .min(Long::compareTo)
+                            .orElse(0L);
+
                     return new ProductViewDTO(
                             p.getId(),
                             p.getName(),
@@ -802,8 +839,12 @@ public class ProductService {
                             p.getDescription(),
                             p.getIsCancellable(),
                             p.getIsReturnable(),
+                            p.getIsActive(),
                             new CategoryViewResponseDTO(p.getCategory().getId(), p.getCategory().getName()),
-                            imageUtils
+                            p.getCategory().getName(),
+                            p.getSeller() != null ? p.getSeller().getCompanyName() : null,
+                            imageUtils,
+                            minPrice
                     );
                 }
         ).toList();

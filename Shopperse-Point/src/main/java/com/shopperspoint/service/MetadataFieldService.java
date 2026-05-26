@@ -30,8 +30,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -229,13 +231,16 @@ public class MetadataFieldService {
 
             String existingValues = category.getFieldValues();
 
-            if (!isValidValues(metadataValues) || !isUniqueValues(existingValues, metadataValues)) {
-                throw new BadRequestException("Invalid values or values are already present");
+            // Merge new values with existing, keeping all unique values
+            Set<String> allValuesSet = new LinkedHashSet<>();
+            for (String v : existingValues.split(",")) {
+                if (!v.trim().isEmpty()) allValuesSet.add(v.trim().toLowerCase());
+            }
+            for (String v : metadataValues.split(",")) {
+                if (!v.trim().isEmpty()) allValuesSet.add(v.trim().toLowerCase());
             }
 
-            String allValues = mergeValues(existingValues, metadataValues);
-
-            category.setFieldValues(allValues.toLowerCase());
+            category.setFieldValues(String.join(",", allValuesSet));
             categoryMetadataFieldValuesRepo.save(category);
             log.info("Metadata field values updated successfully for category id: {} and metadata field id: {}", metadataFieldValuesDTO.getCategoryId(), metadataFieldId);
 

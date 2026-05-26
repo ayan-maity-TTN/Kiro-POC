@@ -107,23 +107,26 @@ public class SellerService {
         seller.setInvalidAttemptCount(0);
 
 
-        List<Address> addresses = sellerDto.getAddress().stream()
-                .map(
-                        addressDTO ->
-                        {
-                            Address address = new Address();
-                            address.setAddressLine(addressDTO.getAddressLine());
-                            address.setLabel(addressDTO.getLabel());
-                            address.setCity(addressDTO.getCity());
-                            address.setState(addressDTO.getState());
-                            address.setCountry(addressDTO.getCountry());
-                            address.setZipCode(addressDTO.getZipCode());
-                            address.setUser(seller);
-                            return address;
-                        }
+        List<Address> addresses = new ArrayList<>();
+        if (sellerDto.getAddress() != null && !sellerDto.getAddress().isEmpty()) {
+            addresses = sellerDto.getAddress().stream()
+                    .map(
+                            addressDTO ->
+                            {
+                                Address address = new Address();
+                                address.setAddressLine(addressDTO.getAddressLine());
+                                address.setLabel(addressDTO.getLabel());
+                                address.setCity(addressDTO.getCity());
+                                address.setState(addressDTO.getState());
+                                address.setCountry(addressDTO.getCountry());
+                                address.setZipCode(addressDTO.getZipCode());
+                                address.setUser(seller);
+                                return address;
+                            }
 
-                )
-                .collect(Collectors.toList());
+                    )
+                    .collect(Collectors.toList());
+        }
 
 
         seller.setAddresses(addresses);
@@ -249,15 +252,17 @@ public class SellerService {
 
         Seller seller = getLoggedinSeller(request);
 
-        Address address = seller.getAddresses().get(0);
-        AddressDTO addressDTO = new AddressDTO();
-
-        addressDTO.setAddressLine(address.getAddressLine());
-        addressDTO.setLabel(address.getLabel());
-        addressDTO.setCity(address.getCity());
-        addressDTO.setState(address.getState());
-        addressDTO.setZipCode(address.getZipCode());
-        addressDTO.setCountry(address.getCountry());
+        AddressDTO addressDTO = null;
+        if (seller.getAddresses() != null && !seller.getAddresses().isEmpty()) {
+            Address address = seller.getAddresses().get(0);
+            addressDTO = new AddressDTO();
+            addressDTO.setAddressLine(address.getAddressLine());
+            addressDTO.setLabel(address.getLabel());
+            addressDTO.setCity(address.getCity());
+            addressDTO.setState(address.getState());
+            addressDTO.setZipCode(address.getZipCode());
+            addressDTO.setCountry(address.getCountry());
+        }
 
         log.info("Fetched profile for seller: {}", seller.getEmail());
         return new SellerViewProfileDTO(

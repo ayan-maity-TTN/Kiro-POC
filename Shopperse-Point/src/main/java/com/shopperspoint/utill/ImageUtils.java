@@ -63,7 +63,7 @@ public class ImageUtils {
         for (String ext : exts) {
             File file = new File(basePath + userId + ext);
             if (file.exists()) {
-                return "http://localhost:8080/images/" + type + "/" + userId + ext;
+                return "http://localhost:8082/images/" + type + "/" + userId + ext;
             }
         }
         log.warn("No image found for ID: {}", userId);

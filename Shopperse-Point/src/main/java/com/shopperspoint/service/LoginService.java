@@ -13,7 +13,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,17 +33,15 @@ public class LoginService {
     private final EmailService emailService;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
-    private final MessageSource messageSource;
 
     @Autowired
     public LoginService(UserRepo userRepo, PasswordEncoder passwordEncoder, EmailService emailService,
-                        AuthenticationManager authenticationManager, JwtUtil jwtUtil, MessageSource messageSource) {
+                        AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
-        this.messageSource = messageSource;
     }
 
     @Value("${refresh.expiration}")
@@ -147,9 +144,14 @@ public class LoginService {
 
         log.info("Login successful for user with email {}", email);
 
+        String role = user.getRoles().stream()
+                .map(r -> r.getAuthority().toUpperCase())
+                .findFirst()
+                .orElse("CUSTOMER");
+
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new GenericResponse(messageSource.getMessage("message.greetings", null, locale) + access, message, LocalDateTime.now()));
+                .body(new GenericResponse(role, message, LocalDateTime.now()));
 
 
     }

@@ -38,11 +38,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleGlobalException(Exception ex, WebRequest request) {
         String userFriendlyMessage;
 
-        if (ex.getMessage().contains("Could not resolve attribute")) {
+        String exMessage = ex.getMessage() != null ? ex.getMessage() : "";
+        if (exMessage.contains("Could not resolve attribute")) {
             userFriendlyMessage = "Invalid sort field or attribute used in query";
         } else {
             userFriendlyMessage = "Something went wrong. Please try again later.";
         }
+        ex.printStackTrace();
         ErrorDetails response = new ErrorDetails(error, Arrays.asList(userFriendlyMessage), request.getDescription(false));
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }

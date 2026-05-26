@@ -1,0 +1,49 @@
+{
+  "changelists": [
+    {
+      "name": "Default",
+      "files": [
+        "images/user/2.jpg",
+        ".vscode/changelists.json",
+        "Shopperse-Point/src/main/java/com/shopperspoint/security/Config.java",
+        "Shopperse-Point/src/main/resources/application.properties",
+        ".vscode/settings.json",
+        "frontend/src/pages/customer/ProductDetail.jsx",
+        "frontend/src/pages/customer/Products.jsx",
+        "frontend/src/pages/seller/Variations.jsx",
+        "Shopperse-Point/src/main/java/com/shopperspoint/dto/ProductViewDTO.java",
+        "Shopperse-Point/src/main/java/com/shopperspoint/service/ProductService.java",
+        "Shopperse-Point/src/main/java/com/shopperspoint/utill/ImageUtils.java",
+        "Shopperse-Point/src/main/java/com/shopperspoint/security/SecurityConfig.java",
+        "frontend/package-lock.json",
+        "frontend/src/hooks/useDebounce.js",
+        "frontend/src/pages/public/Home.jsx",
+        "Shopperse-Point/src/main/java/com/shopperspoint/dto/CustomerResponseDTO.java",
+        "Shopperse-Point/src/main/java/com/shopperspoint/service/CustomerService.java",
+        "frontend/src/pages/admin/Customers.jsx",
+        "Shopperse-Point/src/main/java/com/shopperspoint/service/SellerService.java",
+        "frontend/src/pages/customer/Profile.jsx",
+        "images/user/2.png",
+        "Shopperse-Point/src/main/java/com/shopperspoint/utill/WebConfig.java",
+        "frontend/src/pages/admin/Sellers.jsx",
+        "Shopperse-Point/src/main/java/com/shopperspoint/service/LoginService.java",
+        "frontend/src/pages/public/Login.jsx",
+        "images/user/52.png",
+        "frontend/src/pages/seller/Dashboard.jsx",
+        "Shopperse-Point/src/main/java/com/shopperspoint/exceptionhandler/GlobalExceptionHandler.java",
+        "frontend/src/components/shared/Navbar.jsx",
+        "frontend/src/components/seller/SellerSidebar.jsx",
+        "frontend/src/components/admin/AdminSidebar.jsx",
+        "frontend/src/pages/seller/AddProduct.jsx",
+        "frontend/src/pages/admin/Categories.jsx",
+        "Shopperse-Point/src/main/java/com/shopperspoint/service/CategoryService.java",
+        "Shopperse-Point/src/main/java/com/shopperspoint/dto/CategoryUpdateDTO.java",
+        "frontend/src/pages/admin/Metadata.jsx",
+        "Shopperse-Point/src/main/java/com/shopperspoint/dto/CategoryMetadataFieldValuesDTO.java",
+        "Shopperse-Point/src/main/resources/messages/messages.properties",
+        "Shopperse-Point/src/main/java/com/shopperspoint/service/MetadataFieldService.java"
+      ]
+    }
+  ],
+  "active": "Default"
+}

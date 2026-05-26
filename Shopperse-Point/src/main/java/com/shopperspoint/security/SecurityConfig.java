@@ -54,6 +54,7 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorizeRequest -> authorizeRequest
+                        .requestMatchers("/images/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/account/review").permitAll()
                         .requestMatchers("/api/account/register/customer",
                                 "/api/account/activate",
