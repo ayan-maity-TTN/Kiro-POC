@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 400" fill="none">
+  <!-- Dress -->
+  <path d="M250 60 L220 120 L200 280 L180 380 L320 380 L300 280 L280 120 Z" fill="#e91e63" opacity="0.9"/>
+  <path d="M235 60 L250 40 L265 60" fill="#e91e63"/>
+  <ellipse cx="250" cy="55" rx="20" ry="8" fill="#c2185b"/>
+  <!-- Handbag -->
+  <rect x="340" y="200" width="80" height="100" rx="10" fill="#ff6f00"/>
+  <path d="M360 200 Q380 160 400 200" stroke="#e65100" stroke-width="4" fill="none"/>
+  <!-- High heel -->
+  <path d="M80 320 L130 320 L140 380 L70 380 Z" fill="#7b1fa2"/>
+  <path d="M130 320 L160 280 L170 290 L140 330" fill="#7b1fa2"/>
+  <!-- Lipstick -->
+  <rect x="400" y="100" width="20" height="80" rx="3" fill="#333"/>
+  <rect x="400" y="80" width="20" height="25" rx="3" fill="#d32f2f"/>
+  <!-- Sparkles -->
+  <circle cx="150" cy="100" r="4" fill="#ffd700"/>
+  <circle cx="380" cy="150" r="3" fill="#ffd700"/>
+  <circle cx="120" cy="250" r="3" fill="#ffd700"/>
+  <circle cx="420" cy="300" r="4" fill="#ffd700"/>
+</svg>

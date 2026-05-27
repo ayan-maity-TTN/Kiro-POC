@@ -37,14 +37,14 @@ public class CartController {
     }
 
     @PutMapping("/cart")
-    public ResponseEntity<GenericResponse> updateCartItem(@RequestParam Long variationId,
-                                                          @RequestParam Integer quantity,
+    public ResponseEntity<GenericResponse> updateCartItem(@RequestParam(value = "variationId") Long variationId,
+                                                          @RequestParam(value = "quantity") Integer quantity,
                                                           HttpServletRequest request) {
         return cartService.updateCartItem(variationId, quantity, request);
     }
 
     @DeleteMapping("/cart")
-    public ResponseEntity<GenericResponse> removeFromCart(@RequestParam Long variationId,
+    public ResponseEntity<GenericResponse> removeFromCart(@RequestParam(value = "variationId") Long variationId,
                                                           HttpServletRequest request) {
         return cartService.removeFromCart(variationId, request);
     }
@@ -62,13 +62,13 @@ public class CartController {
     }
 
     @PostMapping("/wishlist")
-    public ResponseEntity<GenericResponse> toggleWishlist(@RequestParam Long variationId,
+    public ResponseEntity<GenericResponse> toggleWishlist(@RequestParam(value = "variationId") Long variationId,
                                                           HttpServletRequest request) {
         return cartService.toggleWishlist(variationId, request);
     }
 
     @DeleteMapping("/wishlist")
-    public ResponseEntity<GenericResponse> removeFromWishlist(@RequestParam Long variationId,
+    public ResponseEntity<GenericResponse> removeFromWishlist(@RequestParam(value = "variationId") Long variationId,
                                                               HttpServletRequest request) {
         return cartService.removeFromWishlist(variationId, request);
     }

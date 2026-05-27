@@ -54,7 +54,7 @@ public class SellerController {
     }
 
     @PutMapping("/address")
-    public ResponseEntity<GenericResponse> updateAddress(@RequestParam Long id,
+    public ResponseEntity<GenericResponse> updateAddress(@RequestParam(value = "id") Long id,
                                                          @Validated(OnUpdate.class) @RequestBody AddressDTO addressDTO,
                                                          HttpServletRequest request) {
         return sellerService.updateAddress(id, addressDTO, request);
@@ -72,17 +72,17 @@ public class SellerController {
     }
 
     @GetMapping("/product")
-    public ProductResponseDTO getProduct(@RequestParam Long productId, HttpServletRequest request) {
+    public ProductResponseDTO getProduct(@RequestParam(value = "productId") Long productId, HttpServletRequest request) {
         return productService.viewProductOfSeller(productId, request);
     }
 
     @DeleteMapping("/product")
-    public ResponseEntity<GenericResponse> deleteProduct(@RequestParam Long productId, HttpServletRequest request) {
+    public ResponseEntity<GenericResponse> deleteProduct(@RequestParam(value = "productId") Long productId, HttpServletRequest request) {
         return productService.deleteProductOfSeller(productId, request);
     }
 
     @PutMapping("/product")
-    public ResponseEntity<GenericResponse> updateProduct(@RequestParam Long productId,
+    public ResponseEntity<GenericResponse> updateProduct(@RequestParam(value = "productId") Long productId,
                                                          @Valid @RequestBody ProductUpdateDTO productUpdateDTO,
                                                          HttpServletRequest request) {
         return productService.updateProductOfSeller(productId, productUpdateDTO, request);
@@ -90,11 +90,11 @@ public class SellerController {
 
     @GetMapping("/products")
     public List<ProductResponseDTO> getAllProduct(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "name") String sort,
-            @RequestParam(defaultValue = "asc") String order,
-            @RequestParam(required = false) String query,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sort", defaultValue = "name") String sort,
+            @RequestParam(value = "order", defaultValue = "asc") String order,
+            @RequestParam(value = "query", required = false) String query,
             HttpServletRequest request) {
         return productService.viewAllProductOfSeller(page, size, sort, order, query, request);
     }
@@ -107,26 +107,26 @@ public class SellerController {
     }
 
     @GetMapping("/product/variation")
-    public ProductVariationResponseDTO viewProductVariation(@RequestParam Long variationId,
+    public ProductVariationResponseDTO viewProductVariation(@RequestParam(value = "variationId") Long variationId,
                                                             HttpServletRequest request) {
         return productService.getProductVariation(variationId, request);
     }
 
     @GetMapping("/product/variations")
     public List<ProductVariationResponseDTO> viewAllVariationOfProduct(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sort,
-            @RequestParam(defaultValue = "asc") String order,
-            @RequestParam(required = false) String query,
-            @RequestParam Long productId,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sort", defaultValue = "id") String sort,
+            @RequestParam(value = "order", defaultValue = "asc") String order,
+            @RequestParam(value = "query", required = false) String query,
+            @RequestParam(value = "productId") Long productId,
             HttpServletRequest request) {
         return productService.getVariationsForProduct(page, size, sort, order, query, productId, request);
     }
 
     @PutMapping("/product/variation")
     public ResponseEntity<GenericResponse> updateProductVariation(
-            @RequestParam Long variationId,
+            @RequestParam(value = "variationId") Long variationId,
             @Valid @ModelAttribute ProductVariationUpdateDTO variationUpdateDTO,
             HttpServletRequest request) {
         return productService.updateProductVariation(variationId, variationUpdateDTO, request);

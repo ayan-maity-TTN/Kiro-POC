@@ -77,6 +77,21 @@ public interface ProductRepo extends JpaRepository<Product, Long> {
             Pageable pageable
     );
 
+    @Query("""
+                SELECT p FROM Product p
+                WHERE p.isActive = true AND
+                      p.isDeleted = false AND (
+                    lower(p.name) LIKE lower(concat('%', cast(:query as string), '%')) OR
+                    lower(p.brand) LIKE lower(concat('%', cast(:query as string), '%')) OR
+                    lower(p.description) LIKE lower(concat('%', cast(:query as string), '%')) OR
+                    lower(p.category.name) LIKE lower(concat('%', cast(:query as string), '%'))
+                )
+            """)
+    Page<Product> searchProducts(
+            @Param("query") String query,
+            Pageable pageable
+    );
+
     Optional<Product> findByIdAndIsActiveTrueAndIsDeletedFalse(Long productId);
 
 

@@ -25,12 +25,13 @@ export default function SellerVariations() {
   const [editId, setEditId] = useState(null);
   const [saving, setSaving] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
+  const [metadataFields, setMetadataFields] = useState([]);
   const fileRef = useRef();
 
   const [form, setForm] = useState({
     price: "",
     quantityAvailable: "",
-    metadata: "",
+    metadata: {},
   });
 
   const fetchData = () => {
@@ -38,10 +39,17 @@ export default function SellerVariations() {
     Promise.all([
       sellerService.getProduct(productId),
       sellerService.getAllVariations({ productId, page: 0, size: 20 }),
+      sellerService.getLeafCategories(),
     ])
-      .then(([pRes, vRes]) => {
+      .then(([pRes, vRes, cRes]) => {
         setProduct(pRes.data);
         setVariations(vRes.data || []);
+        // Find the category matching this product and extract its metadata fields
+        const categories = cRes.data || [];
+        const productCategory = categories.find(
+          (c) => c.categoryId === pRes.data.categoryId,
+        );
+        setMetadataFields(productCategory?.metadataFields || []);
       })
       .catch(() => toast.error("Failed to load data"))
       .finally(() => setLoading(false));
@@ -52,16 +60,27 @@ export default function SellerVariations() {
   }, [productId]);
 
   const openAdd = () => {
-    setForm({ price: "", quantityAvailable: "", metadata: "" });
+    // Initialize metadata with empty values for each field
+    const emptyMeta = {};
+    metadataFields.forEach((f) => {
+      emptyMeta[f.metadataFieldName] = "";
+    });
+    setForm({ price: "", quantityAvailable: "", metadata: emptyMeta });
     setEditId(null);
     setImagePreview(null);
     setShowForm(true);
   };
   const openEdit = (v) => {
+    const existingMeta = v.metaData || {};
+    // Merge with available fields so all fields show up
+    const mergedMeta = {};
+    metadataFields.forEach((f) => {
+      mergedMeta[f.metadataFieldName] = existingMeta[f.metadataFieldName] || "";
+    });
     setForm({
       price: v.price || "",
       quantityAvailable: v.quantityAvailable || "",
-      metadata: JSON.stringify(v.metaData || {}),
+      metadata: mergedMeta,
     });
     setEditId(v.id);
     setImagePreview(v.imageUrl || null);
@@ -73,9 +92,22 @@ export default function SellerVariations() {
     setImagePreview(null);
   };
 
+  const handleMetadataChange = (fieldName, value) => {
+    setForm((prev) => ({
+      ...prev,
+      metadata: { ...prev.metadata, [fieldName]: value },
+    }));
+  };
+
   const handleSave = async () => {
     if (!form.price) {
       toast.error("Price is required");
+      return;
+    }
+    // Validate that at least one metadata field is selected
+    const filledMeta = Object.entries(form.metadata).filter(([, v]) => v);
+    if (metadataFields.length > 0 && filledMeta.length === 0) {
+      toast.error("Please select at least one attribute");
       return;
     }
     setSaving(true);
@@ -83,20 +115,10 @@ export default function SellerVariations() {
       const formData = new FormData();
       formData.append("price", form.price);
       formData.append("quantityAvailable", form.quantityAvailable || 0);
-      if (form.metadata) {
-        let parsed;
-        try {
-          parsed = JSON.parse(form.metadata);
-        } catch {
-          toast.error("Invalid metadata JSON");
-          setSaving(false);
-          return;
-        }
-        // Backend expects metaData as Map<String,String> via @ModelAttribute
-        Object.entries(parsed).forEach(([key, value]) => {
-          formData.append(`metaData[${key}]`, value);
-        });
-      }
+      // Append metadata key-value pairs
+      filledMeta.forEach(([key, value]) => {
+        formData.append(`metaData[${key}]`, value);
+      });
       if (!editId) formData.append("productId", productId);
       if (fileRef.current?.files[0])
         formData.append("primaryImage", fileRef.current.files[0]);
@@ -190,15 +212,40 @@ export default function SellerVariations() {
                 />
               </FormField>
             </div>
-            <FormField label="Metadata (JSON)" className="mt-4">
-              <textarea
-                value={form.metadata}
-                onChange={(e) => setForm({ ...form, metadata: e.target.value })}
-                rows={3}
-                placeholder='{"color": "red", "size": "M"}'
-                className="input resize-none font-mono text-xs"
-              />
-            </FormField>
+            {/* Metadata Fields */}
+            {metadataFields.length > 0 && (
+              <div className="mt-4">
+                <label className="label">Attributes</label>
+                <div className="grid sm:grid-cols-2 gap-4 mt-1">
+                  {metadataFields.map((field) => (
+                    <FormField
+                      key={field.metadataFieldId}
+                      label={field.metadataFieldName}
+                    >
+                      <select
+                        value={form.metadata[field.metadataFieldName] || ""}
+                        onChange={(e) =>
+                          handleMetadataChange(
+                            field.metadataFieldName,
+                            e.target.value,
+                          )
+                        }
+                        className="input"
+                      >
+                        <option value="">
+                          Select {field.metadataFieldName}
+                        </option>
+                        {(field.values || []).map((val) => (
+                          <option key={val} value={val}>
+                            {val}
+                          </option>
+                        ))}
+                      </select>
+                    </FormField>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Image Upload */}
             <div className="mt-4">

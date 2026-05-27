@@ -36,13 +36,13 @@ public class ReviewController {
     }
 
     @DeleteMapping("/review")
-    public ResponseEntity<GenericResponse> deleteReview(@RequestParam Long productId,
+    public ResponseEntity<GenericResponse> deleteReview(@RequestParam(value = "productId") Long productId,
                                                         HttpServletRequest request) {
         return reviewService.deleteReview(productId, request);
     }
 
     @GetMapping("/review")
-    public List<ProductReviewResponseDTO> getProductReviews(@RequestParam Long productId) {
+    public List<ProductReviewResponseDTO> getProductReviews(@RequestParam(value = "productId") Long productId) {
         return reviewService.getProductReviews(productId);
     }
 }

@@ -1,71 +1,137 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Pagination, Navigation, EffectFade } from "swiper/modules";
+import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
-import "swiper/css/pagination";
 import "swiper/css/navigation";
-import "swiper/css/effect-fade";
 import {
   ShoppingBag,
   Shield,
   Truck,
   RefreshCw,
-  Star,
   ArrowRight,
-  Zap,
   Award,
   Users,
+  Zap,
 } from "lucide-react";
 import {
-  fadeInUp,
   staggerContainer,
   staggerItem,
   pageTransition,
   scaleIn,
 } from "../../animations/variants";
+import publicService from "../../services/publicService";
+import { formatCurrency } from "../../utils";
+import Skeleton from "../../components/ui/Skeleton";
 
 const heroSlides = [
   {
-    title: "Discover Amazing Products",
-    subtitle: "Shop the latest trends with unbeatable prices and fast delivery",
-    cta: "Shop Now",
-    bg: "from-primary-700 via-primary-600 to-accent-600",
-    img: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800&q=80",
+    title: "Starting \u20B9199",
+    subtitle: "Deals on Fashion & Beauty",
+    bg: "#e8f5e9",
+    textColor: "text-gray-900",
+    img: "/banners/fashion.svg",
   },
   {
-    title: "New Season Arrivals",
-    subtitle: "Explore thousands of products from top sellers across India",
-    cta: "Explore",
-    bg: "from-purple-700 via-primary-600 to-primary-500",
-    img: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&q=80",
+    title: "Up to 70% Off",
+    subtitle: "Electronics & Gadgets Sale",
+    bg: "#fce4ec",
+    textColor: "text-gray-900",
+    img: "/banners/electronics.svg",
   },
   {
-    title: "Exclusive Deals Today",
-    subtitle: "Limited time offers on electronics, fashion, and more",
-    cta: "View Deals",
-    bg: "from-accent-600 via-orange-500 to-primary-600",
-    img: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&q=80",
+    title: "Under \u20B9399",
+    subtitle: "Shop T-Shirts & Polos",
+    bg: "#e3f2fd",
+    textColor: "text-gray-900",
+    img: "/banners/tshirts.svg",
   },
 ];
 
-const categories = [
-  { name: "Electronics", icon: "💻", color: "from-blue-500 to-blue-600" },
-  { name: "Fashion", icon: "👗", color: "from-pink-500 to-rose-500" },
-  { name: "Home & Living", icon: "🏠", color: "from-green-500 to-emerald-500" },
-  { name: "Sports", icon: "⚽", color: "from-orange-500 to-amber-500" },
-  { name: "Books", icon: "📚", color: "from-purple-500 to-violet-500" },
-  { name: "Beauty", icon: "💄", color: "from-red-500 to-pink-500" },
-  { name: "Toys", icon: "🧸", color: "from-yellow-500 to-orange-400" },
-  { name: "Grocery", icon: "🛒", color: "from-teal-500 to-cyan-500" },
+const promoSections = [
+  {
+    title: "Best Sellers in Home & Kitchen",
+    items: [
+      {
+        name: "Tissue Rolls",
+        img: "https://picsum.photos/seed/tissue/200/200",
+      },
+      { name: "Garbage Bags", img: "https://picsum.photos/seed/bags/200/200" },
+      {
+        name: "Water Bottle",
+        img: "https://picsum.photos/seed/bottle/200/200",
+      },
+      {
+        name: "Soap Dispenser",
+        img: "https://picsum.photos/seed/soap/200/200",
+      },
+    ],
+    link: "/products",
+    linkText: "Explore more",
+  },
+  {
+    title: "Customers' Most-Loved Products",
+    items: [
+      { name: "Candle Set", img: "https://picsum.photos/seed/candle/200/200" },
+      { name: "Decor Tray", img: "https://picsum.photos/seed/tray/200/200" },
+      { name: "Flower Pot", img: "https://picsum.photos/seed/flower/200/200" },
+      {
+        name: "Smart Speaker",
+        img: "https://picsum.photos/seed/speaker/200/200",
+      },
+    ],
+    link: "/products",
+    linkText: "Explore more",
+  },
+  {
+    title: "Essentials for Your Home",
+    items: [
+      { name: "Bedsheets", img: "https://picsum.photos/seed/bed/200/200" },
+      { name: "Curtains", img: "https://picsum.photos/seed/curtain/200/200" },
+      { name: "Pillows", img: "https://picsum.photos/seed/pillow/200/200" },
+      { name: "Towels", img: "https://picsum.photos/seed/towel/200/200" },
+    ],
+    link: "/products",
+    linkText: "See more",
+  },
+  {
+    title: "Up to 80% Off | Latest Collections",
+    items: [
+      { name: "Coasters", img: "https://picsum.photos/seed/coaster/200/200" },
+      { name: "Wall Art", img: "https://picsum.photos/seed/wallart/200/200" },
+      { name: "Vases", img: "https://picsum.photos/seed/vase/200/200" },
+      { name: "Perfume", img: "https://picsum.photos/seed/perfume/200/200" },
+    ],
+    link: "/products",
+    linkText: "See all deals",
+  },
 ];
+
+const horizontalPromo = {
+  title: "Min. 30% off | Upgrade your home with products from Small Businesses",
+  items: [
+    {
+      name: "Bluetooth Speaker",
+      img: "https://picsum.photos/seed/btspeaker/300/200",
+    },
+    { name: "Panda Lamp", img: "https://picsum.photos/seed/panda/300/200" },
+    { name: "Crystal Globe", img: "https://picsum.photos/seed/globe/300/200" },
+    { name: "Figurines", img: "https://picsum.photos/seed/figurine/300/200" },
+    { name: "Skull Decor", img: "https://picsum.photos/seed/skull/300/200" },
+    {
+      name: "Vintage Camera",
+      img: "https://picsum.photos/seed/camera/300/200",
+    },
+  ],
+};
 
 const features = [
   {
     icon: Truck,
     title: "Free Delivery",
-    desc: "On orders above ₹499",
-    color: "text-blue-500",
+    desc: "On orders above \u20B9499",
+    color: "text-purple-500",
   },
   {
     icon: Shield,
@@ -83,31 +149,7 @@ const features = [
     icon: Award,
     title: "Quality Assured",
     desc: "Verified sellers only",
-    color: "text-purple-500",
-  },
-];
-
-const testimonials = [
-  {
-    name: "Priya Sharma",
-    role: "Regular Customer",
-    text: "Amazing shopping experience! Fast delivery and great quality products.",
-    rating: 5,
-    avatar: "PS",
-  },
-  {
-    name: "Rahul Verma",
-    role: "Verified Buyer",
-    text: "Best prices in the market. The seller support is excellent too.",
-    rating: 5,
-    avatar: "RV",
-  },
-  {
-    name: "Anita Singh",
-    role: "Premium Member",
-    text: "Love the variety of products. Easy returns make shopping stress-free.",
-    rating: 4,
-    avatar: "AS",
+    color: "text-primary-500",
   },
 ];
 
@@ -119,6 +161,18 @@ const stats = [
 ];
 
 export default function Home() {
+  const [categoryProducts, setCategoryProducts] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [activeSlide, setActiveSlide] = useState(0);
+
+  useEffect(() => {
+    publicService
+      .getHomepageProducts()
+      .then((res) => setCategoryProducts(res.data || {}))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <motion.div
       variants={pageTransition}
@@ -126,80 +180,273 @@ export default function Home() {
       animate="visible"
       exit="exit"
     >
-      {/* Hero Swiper */}
-      <section className="relative">
-        <Swiper
-          modules={[Autoplay, Pagination, Navigation, EffectFade]}
-          effect="fade"
-          autoplay={{ delay: 4000, disableOnInteraction: false }}
-          pagination={{ clickable: true }}
-          navigation
-          loop
-          className="h-[480px] md:h-[560px]"
-        >
-          {heroSlides.map((slide, i) => (
-            <SwiperSlide key={i}>
-              <div
-                className={`relative h-full bg-gradient-to-r ${slide.bg} flex items-center overflow-hidden`}
+      {/* Hero Banner + Product Cards wrapped in seamless background */}
+      <div
+        className="transition-all duration-700 ease-in-out"
+        style={{
+          background: `linear-gradient(to bottom, ${heroSlides[activeSlide].bg} 0%, ${heroSlides[activeSlide].bg} 35%, #f3f4f6 75%, #f3f4f6 100%)`,
+        }}
+      >
+        <section className="relative" style={{ background: "transparent" }}>
+          <Swiper
+            modules={[Autoplay, Navigation]}
+            autoplay={{ delay: 3500, disableOnInteraction: false }}
+            navigation
+            loop
+            speed={600}
+            onSlideChange={(swiper) => setActiveSlide(swiper.realIndex)}
+            className="h-[220px] sm:h-[280px] md:h-[350px] lg:h-[400px]"
+            style={{ background: "transparent" }}
+          >
+            {heroSlides.map((slide, i) => (
+              <SwiperSlide key={i} style={{ background: "transparent" }}>
+                <div className="h-full w-full flex items-center justify-between px-8 sm:px-12 md:px-16 lg:px-24">
+                  <div className={slide.textColor}>
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold italic">
+                      {slide.title}
+                    </h2>
+                    <p className="text-lg sm:text-xl md:text-2xl font-medium mt-2 opacity-90">
+                      {slide.subtitle}
+                    </p>
+                  </div>
+                  <div className="hidden sm:block w-[280px] md:w-[360px] lg:w-[420px] h-[180px] md:h-[260px] lg:h-[320px] overflow-hidden mix-blend-multiply">
+                    <img
+                      src={slide.img}
+                      alt={slide.subtitle}
+                      className="w-full h-full object-contain mix-blend-multiply"
+                      loading="lazy"
+                    />
+                  </div>
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </section>
+
+        {/* Product Cards by Category */}
+        <section className="relative z-20 pb-8">
+          <div className="page-container pt-6">
+            {loading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[1, 2, 3, 4].map((i) => (
+                  <Skeleton key={i} className="h-80 rounded-2xl" />
+                ))}
+              </div>
+            ) : Object.keys(categoryProducts).length > 0 ? (
+              <motion.div
+                variants={staggerContainer}
+                initial="hidden"
+                animate="visible"
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
               >
-                <div className="absolute inset-0 opacity-20">
+                {Object.entries(categoryProducts).map(
+                  ([categoryName, products]) => (
+                    <motion.div key={categoryName} variants={staggerItem}>
+                      <div className="card p-5 h-full">
+                        <h3 className="font-display font-bold text-gray-900 dark:text-white text-base mb-1 capitalize">
+                          {categoryName}
+                        </h3>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
+                          {products.length} products available
+                        </p>
+                        <div className="grid grid-cols-2 gap-3 mb-4">
+                          {products.slice(0, 4).map((product) => (
+                            <Link
+                              to={`/product?productId=${product.id}`}
+                              key={product.id}
+                              className="group"
+                            >
+                              <div className="aspect-square rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800 mb-1.5">
+                                {product.primaryImageUrl &&
+                                product.primaryImageUrl.length > 0 ? (
+                                  <img
+                                    src={product.primaryImageUrl[0]}
+                                    alt={product.name}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                    loading="lazy"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center text-gray-300">
+                                    <ShoppingBag size={24} />
+                                  </div>
+                                )}
+                              </div>
+                              <p className="text-xs text-gray-700 dark:text-gray-300 truncate capitalize">
+                                {product.name}
+                              </p>
+                              {product.price > 0 && (
+                                <p className="text-xs font-semibold text-primary-600">
+                                  {formatCurrency(product.price)}
+                                </p>
+                              )}
+                            </Link>
+                          ))}
+                        </div>
+                        <Link
+                          to={`/products?categoryId=${products[0]?.category?.id}`}
+                          className="text-sm text-primary-600 hover:text-primary-700 font-medium hover:underline"
+                        >
+                          See all deals
+                        </Link>
+                      </div>
+                    </motion.div>
+                  ),
+                )}
+              </motion.div>
+            ) : (
+              <div className="text-center py-16">
+                <ShoppingBag size={48} className="mx-auto text-gray-300 mb-4" />
+                <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+                  No products yet
+                </h3>
+                <p className="text-gray-500 text-sm mt-1">
+                  Products will appear here once sellers add them
+                </p>
+              </div>
+            )}
+          </div>
+        </section>
+      </div>
+
+      {/* Promotional Grid Sections - Amazon style */}
+      <section className="bg-[#f3f4f6] dark:bg-gray-950 py-6">
+        <div className="page-container">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {promoSections.map((section, idx) => (
+              <div
+                key={idx}
+                className="bg-white dark:bg-gray-900 rounded-sm p-5 shadow-sm"
+              >
+                <h3 className="font-bold text-gray-900 dark:text-white text-base mb-4">
+                  {section.title}
+                </h3>
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  {section.items.map((item, i) => (
+                    <Link to={section.link} key={i} className="group">
+                      <div className="aspect-square rounded overflow-hidden bg-gray-100 dark:bg-gray-800 mb-1.5">
+                        <img
+                          src={item.img}
+                          alt={item.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          loading="lazy"
+                        />
+                      </div>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
+                        {item.name}
+                      </p>
+                    </Link>
+                  ))}
+                </div>
+                <Link
+                  to={section.link}
+                  className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+                >
+                  {section.linkText}
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Horizontal Promo Strip */}
+      <section className="bg-white dark:bg-gray-900 border-y border-gray-100 dark:border-gray-800 py-5">
+        <div className="page-container">
+          <div className="flex items-center gap-3 mb-4">
+            <h3 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base">
+              {horizontalPromo.title}
+            </h3>
+            <Link
+              to="/products"
+              className="text-sm text-primary-600 hover:text-primary-700 font-medium whitespace-nowrap"
+            >
+              See more
+            </Link>
+          </div>
+          <div className="flex gap-4 overflow-x-auto pb-2 no-scrollbar">
+            {horizontalPromo.items.map((item, i) => (
+              <Link to="/products" key={i} className="flex-shrink-0 w-44 group">
+                <div className="w-44 h-32 rounded overflow-hidden bg-gray-100 dark:bg-gray-800">
                   <img
-                    src={slide.img}
-                    alt=""
-                    className="w-full h-full object-cover"
+                    src={item.img}
+                    alt={item.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     loading="lazy"
                   />
                 </div>
-                <div className="relative page-container w-full px-16 md:px-20">
-                  <motion.div
-                    initial={{ opacity: 0, x: -40 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.6, delay: 0.2 }}
-                    className="max-w-xl text-white"
-                  >
-                    <h1 className="text-4xl md:text-5xl font-display font-bold leading-tight mb-4">
-                      {slide.title}
-                    </h1>
-                    <p className="text-lg text-white/80 mb-8">
-                      {slide.subtitle}
-                    </p>
-                    <div className="flex gap-4">
-                      <Link
-                        to="/register/customer"
-                        className="btn bg-white text-primary-700 hover:bg-gray-100 btn-lg font-semibold shadow-lg"
-                      >
-                        {slide.cta} <ArrowRight size={18} />
-                      </Link>
-                      <Link
-                        to="/about"
-                        className="btn border-2 border-white text-white hover:bg-white/10 btn-lg"
-                      >
-                        Learn More
-                      </Link>
-                    </div>
-                  </motion.div>
-                </div>
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
+              </Link>
+            ))}
+          </div>
+        </div>
       </section>
 
+      {/* Horizontal Product Strip per Category */}
+      {!loading &&
+        Object.entries(categoryProducts).map(
+          ([categoryName, products]) =>
+            products.length > 4 && (
+              <section
+                key={categoryName}
+                className="py-6 bg-white dark:bg-gray-900 border-y border-gray-100 dark:border-gray-800 mb-4"
+              >
+                <div className="page-container">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-display font-bold text-gray-900 dark:text-white text-lg capitalize">
+                      {categoryName}
+                    </h3>
+                    <Link
+                      to={`/products?categoryId=${products[0]?.category?.id}`}
+                      className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+                    >
+                      See more
+                    </Link>
+                  </div>
+                  <div className="flex gap-4 overflow-x-auto pb-2 no-scrollbar">
+                    {products.map((product) => (
+                      <Link
+                        to={`/product?productId=${product.id}`}
+                        key={product.id}
+                        className="flex-shrink-0 w-40 group"
+                      >
+                        <div className="w-40 h-40 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800 mb-2">
+                          {product.primaryImageUrl &&
+                          product.primaryImageUrl.length > 0 ? (
+                            <img
+                              src={product.primaryImageUrl[0]}
+                              alt={product.name}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              loading="lazy"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-300">
+                              <ShoppingBag size={24} />
+                            </div>
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-800 dark:text-gray-200 truncate capitalize">
+                          {product.name}
+                        </p>
+                        {product.price > 0 && (
+                          <p className="text-sm font-bold text-gray-900 dark:text-white">
+                            {formatCurrency(product.price)}
+                          </p>
+                        )}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </section>
+            ),
+        )}
+
       {/* Features Bar */}
-      <section className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
+      <section className="bg-white dark:bg-gray-900 border-y border-gray-100 dark:border-gray-800">
         <div className="page-container py-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {features.map((f, i) => (
-              <motion.div
-                key={i}
-                variants={staggerItem}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                className="flex items-center gap-3 p-3"
-              >
+              <div key={i} className="flex items-center gap-3 p-3">
                 <div
-                  className={`p-2 rounded-xl bg-gray-50 dark:bg-gray-800 ${f.color}`}
+                  className={`p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 ${f.color}`}
                 >
                   <f.icon size={22} />
                 </div>
@@ -211,54 +458,9 @@ export default function Home() {
                     {f.desc}
                   </p>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Categories */}
-      <section className="section bg-gray-50 dark:bg-gray-950">
-        <div className="page-container">
-          <motion.div
-            variants={fadeInUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="text-center mb-10"
-          >
-            <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-2">
-              Shop by Category
-            </h2>
-            <p className="text-gray-500 dark:text-gray-400">
-              Find exactly what you're looking for
-            </p>
-          </motion.div>
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="grid grid-cols-4 md:grid-cols-8 gap-4"
-          >
-            {categories.map((cat, i) => (
-              <motion.div key={i} variants={staggerItem}>
-                <Link
-                  to="/register/customer"
-                  className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-white dark:bg-gray-900 hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300 group"
-                >
-                  <div
-                    className={`w-12 h-12 rounded-xl bg-gradient-to-br ${cat.color} flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform`}
-                  >
-                    {cat.icon}
-                  </div>
-                  <span className="text-xs font-medium text-gray-700 dark:text-gray-300 text-center">
-                    {cat.name}
-                  </span>
-                </Link>
-              </motion.div>
-            ))}
-          </motion.div>
         </div>
       </section>
 
@@ -280,68 +482,6 @@ export default function Home() {
               </motion.div>
             ))}
           </motion.div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="section bg-white dark:bg-gray-900">
-        <div className="page-container">
-          <motion.div
-            variants={fadeInUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="text-center mb-10"
-          >
-            <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-2">
-              What Our Customers Say
-            </h2>
-            <p className="text-gray-500 dark:text-gray-400">
-              Trusted by millions across India
-            </p>
-          </motion.div>
-          <Swiper
-            modules={[Autoplay, Pagination]}
-            autoplay={{ delay: 3500, disableOnInteraction: false }}
-            pagination={{ clickable: true }}
-            spaceBetween={24}
-            slidesPerView={1}
-            breakpoints={{
-              640: { slidesPerView: 2 },
-              1024: { slidesPerView: 3 },
-            }}
-            className="pb-10"
-          >
-            {testimonials.map((t, i) => (
-              <SwiperSlide key={i}>
-                <div className="card p-6 h-full">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-full hero-gradient flex items-center justify-center text-white font-bold text-sm">
-                      {t.avatar}
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-900 dark:text-white text-sm">
-                        {t.name}
-                      </p>
-                      <p className="text-xs text-gray-500">{t.role}</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-0.5 mb-3">
-                    {Array.from({ length: t.rating }).map((_, j) => (
-                      <Star
-                        key={j}
-                        size={14}
-                        className="fill-yellow-400 text-yellow-400"
-                      />
-                    ))}
-                  </div>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-                    "{t.text}"
-                  </p>
-                </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
         </div>
       </section>
 

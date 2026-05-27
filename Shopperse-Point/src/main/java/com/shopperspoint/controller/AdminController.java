@@ -38,41 +38,41 @@ public class AdminController {
 
     @GetMapping("/customers")
     public List<CustomerResponseDTO> getAllCustomer(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sort,
-            @RequestParam(required = false) String email
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sort", defaultValue = "id") String sort,
+            @RequestParam(value = "email", required = false) String email
     ) {
         return customerService.getAllCustomer(page, size, sort, email);
     }
 
     @GetMapping("/sellers")
     public List<SellerResponseDTO> getAllSeller(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sort,
-            @RequestParam(required = false) String email
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sort", defaultValue = "id") String sort,
+            @RequestParam(value = "email", required = false) String email
     ) {
         return sellerService.getAllSellers(page, size, sort, email);
     }
 
     @PatchMapping("/activate/customer")
-    public ResponseEntity<GenericResponse> activateCustomerById(@RequestParam Long id) {
+    public ResponseEntity<GenericResponse> activateCustomerById(@RequestParam(value = "id") Long id) {
         return ResponseEntity.ok(userActivationService.activateCustomer(id));
     }
 
     @PatchMapping("/activate/seller")
-    public ResponseEntity<GenericResponse> activateSellerByID(@RequestParam Long id) {
+    public ResponseEntity<GenericResponse> activateSellerByID(@RequestParam(value = "id") Long id) {
         return ResponseEntity.ok(userActivationService.activateSeller(id));
     }
 
     @PatchMapping("/deactivate/customer")
-    public ResponseEntity<GenericResponse> deActivateCustomerById(@RequestParam Long id) {
+    public ResponseEntity<GenericResponse> deActivateCustomerById(@RequestParam(value = "id") Long id) {
         return ResponseEntity.ok(userActivationService.deActivateCustomer(id));
     }
 
     @PatchMapping("/deactivate/seller")
-    public ResponseEntity<GenericResponse> deActivateSellerByID(@RequestParam Long id) {
+    public ResponseEntity<GenericResponse> deActivateSellerByID(@RequestParam(value = "id") Long id) {
         return ResponseEntity.ok(userActivationService.deActivateSeller(id));
     }
 
@@ -106,11 +106,11 @@ public class AdminController {
 
     @GetMapping("/all/categories")
     public List<CategoryResponseDTO> viewAllCategory(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sort,
-            @RequestParam(defaultValue = "asc") String order,
-            @RequestParam(defaultValue = "") String filter
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sort", defaultValue = "id") String sort,
+            @RequestParam(value = "order", defaultValue = "asc") String order,
+            @RequestParam(value = "filter", defaultValue = "") String filter
     ) {
         return categoryService.getAllCategories(page, size, sort, order, filter);
     }
@@ -122,32 +122,32 @@ public class AdminController {
 
     @GetMapping("/all/metadataFields")
     public List<CategoryMetadataFieldDTO> getAllMetadataFields(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sort,
-            @RequestParam(defaultValue = "asc") String order,
-            @RequestParam(required = false) String filter
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sort", defaultValue = "id") String sort,
+            @RequestParam(value = "order", defaultValue = "asc") String order,
+            @RequestParam(value = "filter", required = false) String filter
     ) {
         return metadataFieldService.getAllMetadata(page, size, sort, order, filter);
     }
 
     @GetMapping("/product")
-    public ProductViewDTO viewProduct(@RequestParam Long productId) {
+    public ProductViewDTO viewProduct(@RequestParam(value = "productId") Long productId) {
         return productService.viewProductByAdmin(productId);
     }
 
     @PutMapping("/product/status")
-    public ResponseEntity<GenericResponse> changeProductStatus(@RequestParam Long productId, @RequestParam boolean isActive) {
+    public ResponseEntity<GenericResponse> changeProductStatus(@RequestParam(value = "productId") Long productId, @RequestParam(value = "isActive") boolean isActive) {
         return productService.changeProductStatus(productId, isActive);
     }
 
     @GetMapping("/products")
     public List<ProductViewDTO> viewAllProducts(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sort,
-            @RequestParam(defaultValue = "asc") String order,
-            @RequestParam(required = false) String filter
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sort", defaultValue = "id") String sort,
+            @RequestParam(value = "order", defaultValue = "asc") String order,
+            @RequestParam(value = "filter", required = false) String filter
     ) {
 
         return productService.viewAllProductsByAdmin(page, size, sort, order, filter);

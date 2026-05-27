@@ -852,4 +852,109 @@ public class ProductService {
 
     }
 
+    public Map<String, List<ProductViewDTO>> getHomepageProducts() {
+        log.info("Fetching homepage products grouped by category");
+        List<Category> allCategories = categoryRepo.findAll();
+        Map<String, List<ProductViewDTO>> result = new LinkedHashMap<>();
+
+        for (Category category : allCategories) {
+            // Only include leaf categories that have products
+            List<Category> children = categoryRepo.findByParentCategory(category);
+            if (!children.isEmpty()) continue;
+
+            List<Product> products = productRepo.findByCategoryIdAndIsActiveTrueAndIsDeletedFalse(
+                    category.getId(), PageRequest.of(0, 8, Sort.by(Sort.Direction.DESC, "id"))
+            ).getContent();
+
+            if (products.isEmpty()) continue;
+
+            List<ProductViewDTO> productDTOs = products.stream().map(product -> {
+                List<String> images = product.getProductVariations().stream()
+                        .filter(ProductVariation::getIsActive)
+                        .map(v -> ImageUtils.getImage(v.getId(), type))
+                        .filter(Objects::nonNull)
+                        .toList();
+
+                Long minPrice = product.getProductVariations().stream()
+                        .filter(ProductVariation::getIsActive)
+                        .map(ProductVariation::getPrice)
+                        .filter(Objects::nonNull)
+                        .min(Long::compareTo)
+                        .orElse(0L);
+
+                return new ProductViewDTO(
+                        product.getId(),
+                        product.getName(),
+                        product.getBrand(),
+                        product.getDescription(),
+                        product.getIsCancellable(),
+                        product.getIsReturnable(),
+                        product.getIsActive(),
+                        new CategoryViewResponseDTO(category.getId(), category.getName()),
+                        category.getName(),
+                        product.getSeller() != null ? product.getSeller().getCompanyName() : null,
+                        images,
+                        minPrice
+                );
+            }).toList();
+
+            result.put(category.getName(), productDTOs);
+        }
+
+        return result;
+    }
+
+    public List<ProductViewDTO> searchProducts(String query, int page, int size) {
+        log.info("Public search for: {}", query);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+        Page<Product> products = productRepo.searchProducts(query.trim(), pageable);
+
+        return products.stream().map(product -> {
+            List<String> images = product.getProductVariations().stream()
+                    .filter(ProductVariation::getIsActive)
+                    .map(v -> ImageUtils.getImage(v.getId(), type))
+                    .filter(Objects::nonNull)
+                    .toList();
+
+            Long minPrice = product.getProductVariations().stream()
+                    .filter(ProductVariation::getIsActive)
+                    .map(ProductVariation::getPrice)
+                    .filter(Objects::nonNull)
+                    .min(Long::compareTo)
+                    .orElse(0L);
+
+            return new ProductViewDTO(
+                    product.getId(),
+                    product.getName(),
+                    product.getBrand(),
+                    product.getDescription(),
+                    product.getIsCancellable(),
+                    product.getIsReturnable(),
+                    product.getIsActive(),
+                    new CategoryViewResponseDTO(product.getCategory().getId(), product.getCategory().getName()),
+                    product.getCategory().getName(),
+                    product.getSeller() != null ? product.getSeller().getCompanyName() : null,
+                    images,
+                    minPrice
+            );
+        }).toList();
+    }
+
+    // Public access methods (no auth required)
+    public ProductViewResponseDTO getProductView(Long productId) {
+        return viewProductAndVariationDetails(productId);
+    }
+
+    public List<ProductViewDTO> getPublicProducts(Long categoryId, int page, int size, String sort) {
+        if (categoryId != null) {
+            return viewAllProductsByCustomer(page, size, "id", "desc", null, categoryId);
+        }
+        // If no category, return search with empty query
+        return searchProducts("", page, size);
+    }
+
+    public List<ProductViewDTO> getSimilarProducts(Long productId, int limit) {
+        return viewSimilarProducts(0, limit, "id", "desc", null, productId);
+    }
+
 }

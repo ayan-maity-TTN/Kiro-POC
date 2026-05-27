@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 400" fill="none">
+  <!-- T-shirt 1 - Black -->
+  <path d="M100 80 L80 120 L60 110 L50 140 L80 150 L80 300 L170 300 L170 150 L200 140 L190 110 L170 120 L150 80 Z" fill="#212121"/>
+  <!-- T-shirt 2 - Yellow -->
+  <path d="M200 100 L180 140 L160 130 L150 160 L180 170 L180 320 L270 320 L270 170 L300 160 L290 130 L270 140 L250 100 Z" fill="#f9a825"/>
+  <!-- T-shirt 3 - White -->
+  <path d="M290 60 L270 100 L250 90 L240 120 L270 130 L270 280 L360 280 L360 130 L390 120 L380 90 L360 100 L340 60 Z" fill="#fafafa" stroke="#bdbdbd" stroke-width="1"/>
+  <!-- T-shirt 4 - Green -->
+  <path d="M360 120 L340 160 L320 150 L310 180 L340 190 L340 340 L430 340 L430 190 L460 180 L450 150 L430 160 L410 120 Z" fill="#558b2f"/>
+  <!-- Hanger lines -->
+  <line x1="125" y1="50" x2="125" y2="80" stroke="#757575" stroke-width="2"/>
+  <line x1="225" y1="70" x2="225" y2="100" stroke="#757575" stroke-width="2"/>
+  <line x1="325" y1="30" x2="325" y2="60" stroke="#757575" stroke-width="2"/>
+  <line x1="395" y1="90" x2="395" y2="120" stroke="#757575" stroke-width="2"/>
+  <!-- Hanger hooks -->
+  <path d="M120 50 Q125 40 130 50" stroke="#757575" stroke-width="2" fill="none"/>
+  <path d="M220 70 Q225 60 230 70" stroke="#757575" stroke-width="2" fill="none"/>
+  <path d="M320 30 Q325 20 330 30" stroke="#757575" stroke-width="2" fill="none"/>
+  <path d="M390 90 Q395 80 400 90" stroke="#757575" stroke-width="2" fill="none"/>
+  <!-- Rack bar -->
+  <line x1="40" y1="45" x2="460" y2="45" stroke="#9e9e9e" stroke-width="3" opacity="0.5"/>
+</svg>

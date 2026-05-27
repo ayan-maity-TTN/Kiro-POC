@@ -10,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { selectSidebarOpen, setSidebarOpen } from "../../store/slices/uiSlice";
+import { selectUser } from "../../store/slices/authSlice";
 
 const links = [
   { to: "/seller/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -22,8 +23,13 @@ const links = [
 export default function SellerSidebar() {
   const dispatch = useDispatch();
   const sidebarOpen = useSelector(selectSidebarOpen);
+  const user = useSelector(selectUser);
 
   const closeSidebar = () => dispatch(setSidebarOpen(false));
+
+  const panelName = user?.firstName
+    ? `${user.firstName}'s Store`
+    : "Seller Panel";
 
   return (
     <>
@@ -31,7 +37,7 @@ export default function SellerSidebar() {
       <aside className="hidden lg:flex flex-col w-64 fixed left-0 top-16 bottom-0 bg-white dark:bg-gray-900 border-r border-gray-100 dark:border-gray-800 z-30">
         <div className="p-4 border-b border-gray-100 dark:border-gray-800">
           <span className="font-display font-semibold text-gray-900 dark:text-gray-100">
-            Seller Panel
+            {panelName}
           </span>
         </div>
         <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
@@ -72,7 +78,7 @@ export default function SellerSidebar() {
             >
               <div className="p-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
                 <span className="font-display font-semibold text-gray-900 dark:text-gray-100">
-                  Seller Panel
+                  {panelName}
                 </span>
                 <button
                   onClick={closeSidebar}

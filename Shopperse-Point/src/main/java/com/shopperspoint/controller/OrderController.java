@@ -33,25 +33,25 @@ public class OrderController {
 
     @GetMapping("/api/account/orders")
     public List<OrderResponseDTO> getMyOrders(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
             HttpServletRequest request) {
         return orderService.getCustomerOrders(page, size, request);
     }
 
     @GetMapping("/api/account/orders/{id}")
-    public OrderResponseDTO getOrderDetail(@PathVariable Long id, HttpServletRequest request) {
+    public OrderResponseDTO getOrderDetail(@PathVariable(value = "id") Long id, HttpServletRequest request) {
         return orderService.getOrderDetail(id, request);
     }
 
     @PatchMapping("/api/account/orders/{id}/cancel")
-    public ResponseEntity<GenericResponse> cancelOrderItem(@PathVariable Long id,
+    public ResponseEntity<GenericResponse> cancelOrderItem(@PathVariable(value = "id") Long id,
                                                            HttpServletRequest request) {
         return orderService.cancelOrderItem(id, request);
     }
 
     @PatchMapping("/api/account/orders/{id}/return")
-    public ResponseEntity<GenericResponse> returnOrderItem(@PathVariable Long id,
+    public ResponseEntity<GenericResponse> returnOrderItem(@PathVariable(value = "id") Long id,
                                                            HttpServletRequest request) {
         return orderService.returnOrderItem(id, request);
     }
@@ -60,8 +60,8 @@ public class OrderController {
 
     @GetMapping("/api/vendor/orders")
     public List<OrderResponseDTO> getSellerOrders(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
             HttpServletRequest request) {
         return orderService.getSellerOrders(page, size, request);
     }
@@ -76,11 +76,11 @@ public class OrderController {
 
     @GetMapping("/api/management/orders")
     public List<OrderResponseDTO> getAllOrders(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "dateCreated") String sort,
-            @RequestParam(defaultValue = "desc") String order,
-            @RequestParam(required = false) String filter) {
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sort", defaultValue = "dateCreated") String sort,
+            @RequestParam(value = "order", defaultValue = "desc") String order,
+            @RequestParam(value = "filter", required = false) String filter) {
         return orderService.getAllOrders(page, size, sort, order, filter);
     }
 

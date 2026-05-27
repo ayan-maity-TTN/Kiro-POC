@@ -146,7 +146,16 @@ export default function CustomerProducts() {
 
   const fetchProducts = useCallback(() => {
     if (!categoryId) {
-      setLoading(false);
+      // Load all products via public search when no category selected
+      setLoading(true);
+      const [sortField, sortOrder] = sort.split("-");
+      import("../../services/publicService").then((mod) => {
+        mod.default
+          .searchProducts(search || "", page, 12)
+          .then((res) => setProducts(res.data || []))
+          .catch(() => setProducts([]))
+          .finally(() => setLoading(false));
+      });
       return;
     }
     setLoading(true);

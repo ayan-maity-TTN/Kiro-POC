@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion, AnimatePresence } from "framer-motion";
@@ -12,12 +12,14 @@ import {
   ShoppingBag,
   ShieldCheck,
   User,
+  X,
 } from "lucide-react";
 import { loginSchema } from "../../utils/validators";
 import { setCredentials } from "../../store/slices/authSlice";
 import authService from "../../services/authService";
 import { fadeInUp, pageTransition } from "../../animations/variants";
 import FormField from "../../components/ui/FormField";
+import Home from "./Home";
 
 const tabVariants = {
   hidden: { opacity: 0, y: 8 },
@@ -28,7 +30,9 @@ const tabVariants = {
 export default function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [tab, setTab] = useState("user"); // 'user' | 'admin'
+  const location = useLocation();
+  const from = location.state?.from?.pathname || null;
+  const [tab, setTab] = useState("user");
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -56,15 +60,42 @@ export default function Login() {
 
       dispatch(setCredentials({ user: { email: data.email }, role }));
 
+      try {
+        let profileRes;
+        if (role === "CUSTOMER") {
+          const { default: customerService } =
+            await import("../../services/customerService");
+          profileRes = await customerService.getProfile();
+        } else if (role === "SELLER") {
+          const { default: sellerService } =
+            await import("../../services/sellerService");
+          profileRes = await sellerService.getProfile();
+        }
+        if (profileRes?.data) {
+          const profile = profileRes.data;
+          dispatch(
+            setCredentials({
+              user: {
+                email: data.email,
+                firstName: profile.firstName,
+                lastName: profile.lastName,
+                profileImageUrl: profile.profileImageUrl,
+              },
+              role,
+            }),
+          );
+        }
+      } catch (_) {}
+
       if (role === "ADMIN") {
         toast.success("Welcome, Admin!");
-        navigate("/admin/dashboard");
+        navigate(from || "/admin/dashboard");
       } else if (role === "SELLER") {
         toast.success("Welcome back!");
-        navigate("/seller/dashboard");
+        navigate(from || "/seller/dashboard");
       } else {
         toast.success("Welcome back!");
-        navigate("/customer/dashboard");
+        navigate(from || "/customer/dashboard");
       }
     } catch (err) {
       const d = err.response?.data;
@@ -82,15 +113,28 @@ export default function Login() {
   const isAdmin = tab === "admin";
 
   return (
-    <motion.div
-      variants={pageTransition}
-      initial="hidden"
-      animate="visible"
-      exit="exit"
-      className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4"
-    >
-      <div className="w-full max-w-md">
-        <motion.div variants={fadeInUp} className="card p-8">
+    <div className="relative">
+      {/* Home page content in background */}
+      <div className="pointer-events-none select-none opacity-40 blur-[1px] overflow-hidden max-h-screen">
+        <Home />
+      </div>
+
+      {/* Login modal overlay */}
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 overflow-hidden">
+        <motion.div
+          variants={fadeInUp}
+          initial="hidden"
+          animate="visible"
+          className="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 relative"
+        >
+          {/* Close button - go to home */}
+          <Link
+            to="/"
+            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+          >
+            <X size={20} />
+          </Link>
+
           {/* Logo */}
           <div className="text-center mb-6">
             <div
@@ -99,12 +143,12 @@ export default function Login() {
               {isAdmin ? <ShieldCheck size={28} /> : <ShoppingBag size={28} />}
             </div>
             <h1 className="text-2xl font-display font-bold text-gray-900 dark:text-white">
-              {isAdmin ? "Admin Portal" : "Welcome back"}
+              {isAdmin ? "Admin Portal" : "Sign in to ShoppersPoint"}
             </h1>
             <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
               {isAdmin
                 ? "Sign in to the admin dashboard"
-                : "Sign in to your account"}
+                : "Access deals, orders & more"}
             </p>
           </div>
 
@@ -213,7 +257,6 @@ export default function Login() {
             </motion.form>
           </AnimatePresence>
 
-          {/* Register links — only for user tab */}
           {!isAdmin && (
             <div className="mt-6 text-center space-y-2">
               <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -237,7 +280,6 @@ export default function Login() {
             </div>
           )}
 
-          {/* Admin tab footer note */}
           {isAdmin && (
             <p className="mt-6 text-center text-xs text-gray-400 dark:text-gray-500">
               Restricted access. Authorised personnel only.
@@ -245,6 +287,6 @@ export default function Login() {
           )}
         </motion.div>
       </div>
-    </motion.div>
+    </div>
   );
 }

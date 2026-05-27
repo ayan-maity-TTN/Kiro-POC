@@ -1,11 +1,12 @@
-import { Outlet } from 'react-router-dom'
-import { AnimatePresence } from 'framer-motion'
-import Navbar from '../components/shared/Navbar'
-import AdminSidebar from '../components/admin/AdminSidebar'
+import { Outlet } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
+import Navbar from "../components/shared/Navbar";
+import AdminSidebar from "../components/admin/AdminSidebar";
+import Footer from "../components/shared/Footer";
 
 export default function AdminLayout() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
       <Navbar />
       <div className="flex flex-1">
         <AdminSidebar />
@@ -15,6 +16,9 @@ export default function AdminLayout() {
           </AnimatePresence>
         </main>
       </div>
+      <div className="lg:ml-64">
+        <Footer />
+      </div>
     </div>
-  )
+  );
 }

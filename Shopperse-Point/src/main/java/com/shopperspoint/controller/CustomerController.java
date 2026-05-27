@@ -75,52 +75,52 @@ public class CustomerController {
     }
 
     @PutMapping("/addresses")
-    public ResponseEntity<GenericResponse> updateAddressOfCustomer(@RequestParam Long id,
+    public ResponseEntity<GenericResponse> updateAddressOfCustomer(@RequestParam(value = "id") Long id,
                                                                    @Validated(OnUpdate.class) @RequestBody AddressDTO addressDTO,
                                                                    HttpServletRequest request) {
         return customerService.updateAddress(id, addressDTO, request);
     }
 
     @DeleteMapping("/addresses")
-    public ResponseEntity<GenericResponse> deleteAddressOfCustomer(@RequestParam Long id,
+    public ResponseEntity<GenericResponse> deleteAddressOfCustomer(@RequestParam(value = "id") Long id,
                                                                    HttpServletRequest request) {
         return customerService.deleteAddress(id, request);
     }
 
     @GetMapping("/categories")
-    public List<CustomerViewCategoryDTO> viewCategory(@RequestParam(required = false) Long categoryId) {
+    public List<CustomerViewCategoryDTO> viewCategory(@RequestParam(value = "categoryId", required = false) Long categoryId) {
         return categoryService.viewCategoryCustomer(categoryId);
     }
 
     @GetMapping("/categories/filter")
-    public CategoryFilterResponseDTO filterCategories(@RequestParam Long id) {
+    public CategoryFilterResponseDTO filterCategories(@RequestParam(value = "id") Long id) {
         return categoryService.getAllFilterCategoryDetails(id);
     }
 
     @GetMapping("/product")
-    public ProductViewResponseDTO viewProduct(@RequestParam Long productId) {
+    public ProductViewResponseDTO viewProduct(@RequestParam(value = "productId") Long productId) {
         return productService.viewProductAndVariationDetails(productId);
     }
 
     @GetMapping("/products")
     public List<ProductViewDTO> viewAllProducts(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sort,
-            @RequestParam(defaultValue = "asc") String order,
-            @RequestParam(required = false) String query,
-            @RequestParam Long categoryId) {
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sort", defaultValue = "id") String sort,
+            @RequestParam(value = "order", defaultValue = "asc") String order,
+            @RequestParam(value = "query", required = false) String query,
+            @RequestParam(value = "categoryId") Long categoryId) {
         return productService.viewAllProductsByCustomer(page, size, sort, order, query, categoryId);
     }
 
     @GetMapping("/products/similar")
     public List<ProductViewDTO> viewAllSimilarProducts(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sort,
-            @RequestParam(defaultValue = "asc") String order,
-            @RequestParam(required = false) String query,
-            @RequestParam Long productId) {
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sort", defaultValue = "id") String sort,
+            @RequestParam(value = "order", defaultValue = "asc") String order,
+            @RequestParam(value = "query", required = false) String query,
+            @RequestParam(value = "productId") Long productId) {
         return productService.viewSimilarProducts(page, size, sort, order, query, productId);
     }
 }

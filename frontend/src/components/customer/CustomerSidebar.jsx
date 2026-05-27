@@ -1,25 +1,38 @@
-import { NavLink } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
-import { LayoutDashboard, User, MapPin, ShoppingBag, Heart, ShoppingCart, Package, X } from 'lucide-react'
-import { useDispatch, useSelector } from 'react-redux'
-import { selectSidebarOpen, setSidebarOpen } from '../../store/slices/uiSlice'
-import { drawerVariants, overlayVariants } from '../../animations/variants'
+import { NavLink } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  LayoutDashboard,
+  User,
+  MapPin,
+  ShoppingBag,
+  Heart,
+  ShoppingCart,
+  Package,
+  X,
+} from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { selectSidebarOpen, setSidebarOpen } from "../../store/slices/uiSlice";
+import { selectUser } from "../../store/slices/authSlice";
+import { drawerVariants, overlayVariants } from "../../animations/variants";
 
 const links = [
-  { to: '/customer/dashboard',  icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/customer/profile',    icon: User,            label: 'Profile' },
-  { to: '/customer/addresses',  icon: MapPin,          label: 'Addresses' },
-  { to: '/customer/products',   icon: ShoppingBag,     label: 'Browse Products' },
-  { to: '/customer/cart',       icon: ShoppingCart,    label: 'Cart' },
-  { to: '/customer/wishlist',   icon: Heart,           label: 'Wishlist' },
-  { to: '/customer/orders',     icon: Package,         label: 'My Orders' },
-]
+  { to: "/customer/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+  { to: "/customer/profile", icon: User, label: "Profile" },
+  { to: "/customer/addresses", icon: MapPin, label: "Addresses" },
+  { to: "/customer/products", icon: ShoppingBag, label: "Browse Products" },
+  { to: "/customer/cart", icon: ShoppingCart, label: "Cart" },
+  { to: "/customer/wishlist", icon: Heart, label: "Wishlist" },
+  { to: "/customer/orders", icon: Package, label: "My Orders" },
+];
 
 function SidebarContent({ onClose }) {
+  const user = useSelector(selectUser);
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-800">
-        <span className="font-display font-semibold text-gray-900 dark:text-gray-100">Customer Menu</span>
+        <span className="font-display font-semibold text-gray-900 dark:text-gray-100">
+          {user?.firstName ? `${user.firstName}'s Menu` : "My Account"}
+        </span>
         {onClose && (
           <button onClick={onClose} className="btn-icon btn-ghost lg:hidden">
             <X size={18} />
@@ -33,7 +46,7 @@ function SidebarContent({ onClose }) {
             to={to}
             onClick={onClose}
             className={({ isActive }) =>
-              `sidebar-link ${isActive ? 'active' : ''}`
+              `sidebar-link ${isActive ? "active" : ""}`
             }
           >
             <Icon size={18} />
@@ -42,13 +55,13 @@ function SidebarContent({ onClose }) {
         ))}
       </nav>
     </div>
-  )
+  );
 }
 
 export default function CustomerSidebar() {
-  const dispatch    = useDispatch()
-  const sidebarOpen = useSelector(selectSidebarOpen)
-  const close       = () => dispatch(setSidebarOpen(false))
+  const dispatch = useDispatch();
+  const sidebarOpen = useSelector(selectSidebarOpen);
+  const close = () => dispatch(setSidebarOpen(false));
 
   return (
     <>
@@ -63,13 +76,17 @@ export default function CustomerSidebar() {
           <>
             <motion.div
               variants={overlayVariants}
-              initial="hidden" animate="visible" exit="exit"
+              initial="hidden"
+              animate="visible"
+              exit="exit"
               className="fixed inset-0 bg-black/40 z-40 lg:hidden"
               onClick={close}
             />
             <motion.aside
               variants={drawerVariants}
-              initial="hidden" animate="visible" exit="exit"
+              initial="hidden"
+              animate="visible"
+              exit="exit"
               className="fixed left-0 top-0 bottom-0 w-72 bg-white dark:bg-gray-900 z-50 lg:hidden shadow-2xl"
             >
               <SidebarContent onClose={close} />
@@ -78,5 +95,5 @@ export default function CustomerSidebar() {
         )}
       </AnimatePresence>
     </>
-  )
+  );
 }

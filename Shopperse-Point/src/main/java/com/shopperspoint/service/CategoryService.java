@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -468,5 +469,17 @@ public class CategoryService {
 
     }
 
+    public List<Map<String, Object>> getPublicCategories() {
+        List<Category> categories = categoryRepo.findAll();
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (Category category : categories) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", category.getId());
+            map.put("name", category.getName());
+            map.put("parentId", category.getParentCategory() != null ? category.getParentCategory().getId() : null);
+            result.add(map);
+        }
+        return result;
+    }
 
 }
